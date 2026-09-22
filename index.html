@@ -452,16 +452,26 @@
             if (isSpinning) return;
             isSpinning = true;
 
-            // Generate random extra degrees (between 0 and 360)
-            const randomExtraRotation = Math.floor(Math.random() * 360);
+            // Target "HEADPHONES", which is at index 1 in the segments array
+            const targetIndex = 1; 
+            const segmentAngle = 360 / segments.length;
             
-            // Add 5 full base spins (360 * 5) for dramatic effect
-            const spinAmount = (360 * 5) + randomExtraRotation;
+            // Calculate the exact rotation needed to land perfectly in the middle of the target segment
+            const targetNormalizedRotation = 360 - ((targetIndex + 0.5) * segmentAngle);
+            
+            // Figure out how much extra rotation is needed from the current position
+            const currentNormalized = currentRotation % 360;
+            let extraRotation = targetNormalizedRotation - currentNormalized;
+            if (extraRotation < 0) {
+                extraRotation += 360; // Keep rotation positive
+            }
+            
+            // Add 5 full base spins (360 * 5) for dramatic effect, plus the exact target rotation
+            const spinAmount = (360 * 5) + extraRotation;
             
             currentRotation += spinAmount;
 
             // Apply CSS transition to spin the canvas
-            // Use cubic-bezier for a realistic "fast start, slow end" physics feel
             canvas.style.transition = 'transform 5s cubic-bezier(0.25, 1, 0.1, 1)';
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
